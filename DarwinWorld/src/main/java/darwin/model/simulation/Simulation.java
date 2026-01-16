@@ -1,0 +1,67 @@
+package darwin.model.simulation;
+
+import darwin.model.Animal;
+import darwin.model.Vector2d;
+import darwin.model.maps.WorldMap;
+
+import java.util.Random;
+
+public class Simulation implements Runnable {
+    private final WorldMap map;
+    private final SimulationConfig config;
+    private volatile boolean running = true;
+    private final Random random = new Random();
+
+    public Simulation(WorldMap map, SimulationConfig config) {
+        this.map = map;
+        this.config = config;
+        populate();
+    }
+
+    private void populate() {
+        for (int i = 0; i < config.startAnimals(); i++) {
+            Vector2d pos = getRandomPosition();
+            Animal animal = new Animal(pos, config.startEnergy(), config.genomeLength());
+            map.place(animal);
+        }
+        map.growPlants();
+    }
+
+    private Vector2d getRandomPosition() {
+        int x = random.nextInt(config.width());
+        int y = random.nextInt(config.height());
+        return new Vector2d(x, y);
+    }
+
+    @Override
+    public void run() {
+        while (running) {
+            System.out.println("--- NOWY DZIEŃ ---");
+
+            map.removeDeadAnimals();
+
+            var allAnimals = map.getElements().stream()
+                    .filter(e -> e instanceof Animal)
+                    .map(e -> (Animal) e)
+                    .toList();
+
+            for (Animal animal : allAnimals) {
+                map.move(animal);
+            }
+            map.feedAnimals();
+            map.reproduceAnimals();
+            map.growPlants();
+
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                running = false;
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void stop() {
+        running = false;
+    }
+}

@@ -1,6 +1,7 @@
 package darwin.model.maps;
 
 import darwin.model.*;
+import darwin.model.simulation.SimulationStats;
 import darwin.model.util.AnimalComparator;
 import darwin.model.util.Boundary;
 import darwin.model.util.MapChangeListener;
@@ -23,6 +24,9 @@ public abstract class AbstractWorldMap implements WorldMap {
     protected final int energyToReproduce = 10;
     protected final int reproductionCost = 5;
 
+    private int deadAnimalsCount = 0;
+    private int  deadAnimalsLifeSpanSum =0;
+
     public AbstractWorldMap(int width, int height) {
         this.lowerLeft = new Vector2d(0, 0);
         this.upperRight = new Vector2d(width - 1, height - 1);
@@ -32,18 +36,17 @@ public abstract class AbstractWorldMap implements WorldMap {
         mapChangeListeners.add(listener);
     }
 
-    protected void mapChanged(String message) {
+    @Override
+    public void mapChanged(SimulationStats stats) {
         for (MapChangeListener listener : mapChangeListeners) {
-            listener.mapChanged(this, message);
+            listener.mapChanged(this, stats);
         }
     }
 
     @Override
     public void place(Animal animal) {
         animals.computeIfAbsent(animal.getPosition(), k -> new ArrayList<>()).add(animal);
-        mapChanged("Placed animal at " + animal.getPosition());
     }
-
     @Override
     public void move(Animal animal) {
         Vector2d oldPos = animal.getPosition();
@@ -59,28 +62,41 @@ public abstract class AbstractWorldMap implements WorldMap {
     }
 
     @Override
-    public void removeDeadAnimals() {
-        List<Animal> dead = new ArrayList<>();
-        for(List<Animal> list : animals.values()){
-            for(Animal a : list){
-                if(a.getEnergy() <= 0){
-                    a.markAsDead(0);
-                    dead.add(a);
+    public void removeDeadAnimals(int currentDay) {
+        var iterator = animals.entrySet().iterator();
+
+        while (iterator.hasNext()) {
+            var entry = iterator.next();
+            List<Animal> animalList = entry.getValue();
+
+            List<Animal> dead = new ArrayList<>();
+            for (Animal animal : animalList) {
+                if (animal.getEnergy() <= 0) {
+                    animal.markAsDead(currentDay);
+                    dead.add(animal);
+
+                    deadAnimalsCount++;
+                    deadAnimalsLifeSpanSum += animal.getAge();
                 }
             }
-            list.removeAll(dead);
+
+            animalList.removeAll(dead);
+
+            if (animalList.isEmpty()) {
+                iterator.remove();
+            }
         }
     }
-
     @Override
     public void feedAnimals() {
         for (Vector2d position : animals.keySet()) {
             if (plants.containsKey(position)) {
                 List<Animal> candidates = animals.get(position);
-                if(!candidates.isEmpty()) {
+                if (!candidates.isEmpty()) {
                     candidates.sort(new AnimalComparator());
                     Animal strongest = candidates.get(0);
                     strongest.addEnergy(plantEnergy);
+
                     plants.remove(position);
                 }
             }
@@ -98,6 +114,8 @@ public abstract class AbstractWorldMap implements WorldMap {
                 if (p1.getEnergy() >= energyToReproduce && p2.getEnergy() >= energyToReproduce) {
                     p1.subtractEnergy(reproductionCost);
                     p2.subtractEnergy(reproductionCost);
+                    p1.addChild();
+                    p2.addChild();
 
                     Animal child = new Animal(p1.getPosition(),
                             2 * reproductionCost,
@@ -124,6 +142,53 @@ public abstract class AbstractWorldMap implements WorldMap {
         return plants.get(position);
     }
 
+    public SimulationStats getStats(int currentDay) {
+        int animalsCount = 0;
+        double totalEnergy = 0;
+        double totalChildren = 0;
+
+        Map<Genotype, Integer> genotypeCounts = new HashMap<>();
+
+        for(List<Animal> list : animals.values()) {
+            animalsCount += list.size();
+            for(Animal a : list) {
+                totalEnergy += a.getEnergy();
+                totalChildren += a.getChildrenCount();
+
+                genotypeCounts.merge(a.getGenotype(), 1, Integer::sum);
+            }
+        }
+
+        int occupiedFields = animals.size() + plants.size();
+        int width = upperRight.getX() + 1;
+        int height = upperRight.getY() + 1;
+        int totalFields = width * height;
+
+        double avgEnergy = animalsCount > 0 ? totalEnergy / animalsCount : 0;
+
+        double avgLife = deadAnimalsCount > 0
+                ? (double) deadAnimalsLifeSpanSum / deadAnimalsCount
+                : 0;
+        double avgChildren = animalsCount > 0 ? totalChildren / animalsCount : 0;
+
+        List<Genotype> top3 = genotypeCounts.entrySet().stream()
+                .sorted(Map.Entry.<Genotype, Integer>comparingByValue().reversed())
+                .limit(3)
+                .map(Map.Entry::getKey)
+                .toList();
+
+        return new SimulationStats(
+                currentDay,
+                animalsCount,
+                plants.size(),
+                totalFields - occupiedFields,
+                avgEnergy,
+                avgLife,
+                avgChildren,
+                top3
+        );
+    }
+
     @Override
     public List<WorldElement> getElements() {
         List<WorldElement> elements = new ArrayList<>(plants.values());
@@ -141,4 +206,5 @@ public abstract class AbstractWorldMap implements WorldMap {
 
     @Override
     public String toString() { return visualizer.draw(lowerLeft, upperRight); }
+
 }

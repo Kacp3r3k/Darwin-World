@@ -1,6 +1,7 @@
 package darwin.model.maps;
 
 import darwin.model.*;
+import darwin.model.simulation.SimulationStats;
 import darwin.model.util.Boundary;
 import darwin.model.util.MapChangeListener;
 
@@ -15,11 +16,13 @@ public interface WorldMap extends MoveValidator {
     int getId();
 
 
-    void removeDeadAnimals();
+    void removeDeadAnimals(int currentDay);
     void feedAnimals();
     void reproduceAnimals();
     void growPlants();
 
     void registerMapChangeListener(MapChangeListener listener);
     Boundary getCurrentBounds();
+    void mapChanged(SimulationStats stats);
+    SimulationStats getStats(int currentDay);
 }

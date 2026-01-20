@@ -2,8 +2,8 @@ package darwin.model.simulation;
 
 import darwin.model.Animal;
 import darwin.model.Vector2d;
+import darwin.model.maps.AbstractWorldMap;
 import darwin.model.maps.WorldMap;
-
 import java.util.Random;
 
 public class Simulation implements Runnable {
@@ -11,6 +11,7 @@ public class Simulation implements Runnable {
     private final SimulationConfig config;
     private volatile boolean running = true;
     private final Random random = new Random();
+    private int day = 0;
 
     public Simulation(WorldMap map, SimulationConfig config) {
         this.map = map;
@@ -36,9 +37,12 @@ public class Simulation implements Runnable {
     @Override
     public void run() {
         while (running) {
-            System.out.println("--- NOWY DZIEŃ ---");
-
-            map.removeDeadAnimals();
+            day++;
+            if (map instanceof AbstractWorldMap abstractMap) {
+                abstractMap.removeDeadAnimals(day);
+            } else {
+                map.removeDeadAnimals(day);
+            }
 
             var allAnimals = map.getElements().stream()
                     .filter(e -> e instanceof Animal)
@@ -48,17 +52,20 @@ public class Simulation implements Runnable {
             for (Animal animal : allAnimals) {
                 map.move(animal);
             }
+
             map.feedAnimals();
             map.reproduceAnimals();
             map.growPlants();
 
+            SimulationStats stats = map.getStats(day);
+            map.mapChanged(stats);
             try {
-                Thread.sleep(500);
+                Thread.sleep(200);
             } catch (InterruptedException e) {
-                running = false;
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
+
     }
 
     public void stop() {

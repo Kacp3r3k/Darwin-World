@@ -49,4 +49,12 @@ public class Genotype {
     }
 
     public int[] getGenes() { return genes; }
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("(");
+        for (int gene : genes) {
+            sb.append(gene).append(" ");
+        }
+        return sb.toString().trim() + ")";
+    }
 }

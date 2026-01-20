@@ -40,9 +40,10 @@ public class Animal implements WorldElement {
         this.energy--;
     }
 
+
     public void addEnergy(int amount) { this.energy += amount; }
     public void subtractEnergy(int amount) { this.energy -= amount; }
-    public void incrementChildren() { this.childrenCount++; }
+    public void addChild() { this.childrenCount++; }
     public void markAsDead(int day) { this.isDead = true; }
 
     public boolean isDead() { return isDead; }

@@ -1,25 +1,32 @@
 package darwin;
 
-import darwin.model.maps.GlobeMap;
-import darwin.model.maps.WorldMap;
-import darwin.model.simulation.Simulation;
-import darwin.model.simulation.SimulationConfig;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 
-public class DarwinWorld {
-    static void main() {
-        SimulationConfig config = SimulationConfig.createDefault();
+public class DarwinWorld extends Application {
 
-        WorldMap map = new GlobeMap(config.width(), config.height());
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getClassLoader().getResource("simulation.fxml"));
+        BorderPane viewRoot = loader.load();
 
-        map.registerMapChangeListener((worldMap, message) -> {
-            System.out.println(message);
-            System.out.println(worldMap);
-        });
+        configureStage(primaryStage, viewRoot);
+        primaryStage.show();
+    }
 
-        Simulation simulation = new Simulation(map, config);
+    private void configureStage(Stage primaryStage, BorderPane viewRoot) {
+        var scene = new Scene(viewRoot);
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Darwin World 2025");
+        primaryStage.minWidthProperty().bind(viewRoot.minWidthProperty());
+        primaryStage.minHeightProperty().bind(viewRoot.minHeightProperty());
+    }
 
-        Thread simulationThread = new Thread(simulation);
-        simulationThread.start();
-
+    public static void main(String[] args) {
+        launch(args);
     }
 }

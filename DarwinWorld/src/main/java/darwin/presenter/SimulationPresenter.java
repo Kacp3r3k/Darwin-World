@@ -8,14 +8,18 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.paint.Color;
 import darwin.model.maps.GlobeMap;
 import darwin.model.simulation.Simulation;
 import darwin.model.simulation.SimulationConfig;
+import javafx.scene.layout.StackPane;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+
 
 public class SimulationPresenter implements MapChangeListener {
+
+    private SimulationConfig config;
 
     @FXML
     private GridPane mapGrid;
@@ -26,10 +30,14 @@ public class SimulationPresenter implements MapChangeListener {
     @FXML private Label dayLabel;
     @FXML private Label animalCountLabel;
     @FXML private Label plantCountLabel;
+    @FXML private Label freeFieldsLabel;
     @FXML private Label avgEnergyLabel;
     @FXML private Label avgLifeLabel;
     @FXML private Label avgChildrenLabel;
     @FXML private Label popularGenotypeLabel;
+
+    @FXML private StackPane mapContainer;
+    @FXML private Canvas mapCanvas;
 
     private WorldMap worldMap;
     private Simulation simulation;
@@ -37,15 +45,26 @@ public class SimulationPresenter implements MapChangeListener {
     public void setWorldMap(WorldMap map) {
         this.worldMap = map;
     }
+    public void setSimulationConfig(SimulationConfig config) {
+        this.config = config;
+    }
 
     @FXML
     public void onSimulationStart() {
-        SimulationConfig config = SimulationConfig.createDefault();
-        this.worldMap = new GlobeMap(config.width(), config.height());
+        if (simulation != null) {
+            simulation.resume();
+            return;
+        }
 
+        if (this.config == null) {
+            this.config = SimulationConfig.createDefault();
+        }
+
+        this.worldMap = new GlobeMap(this.config.width(), this.config.height());
         worldMap.registerMapChangeListener(this);
 
-        this.simulation = new Simulation(worldMap, config);
+        this.simulation = new Simulation(worldMap, this.config);
+
         Thread thread = new Thread(simulation);
         thread.setDaemon(true);
         thread.start();
@@ -53,7 +72,9 @@ public class SimulationPresenter implements MapChangeListener {
 
     @FXML
     public void onSimulationStop() {
-        if(simulation != null) simulation.stop();
+        if (simulation != null) {
+            simulation.pause();
+        }
     }
 
     @Override
@@ -68,6 +89,11 @@ public class SimulationPresenter implements MapChangeListener {
         dayLabel.setText(String.valueOf(stats.day()));
         animalCountLabel.setText(String.valueOf(stats.animalCount()));
         plantCountLabel.setText(String.valueOf(stats.plantCount()));
+
+        if (freeFieldsLabel != null) {
+            freeFieldsLabel.setText(String.valueOf(stats.freeFieldsCount()));
+        }
+
         avgEnergyLabel.setText(String.format("%.2f", stats.averageEnergy()));
         avgLifeLabel.setText(String.format("%.2f", stats.averageLifeSpan()));
         avgChildrenLabel.setText(String.format("%.2f", stats.averageChildren()));
@@ -82,26 +108,60 @@ public class SimulationPresenter implements MapChangeListener {
             popularGenotypeLabel.setText(sb.toString().trim());
         }
     }
+    @FXML
+    public void initialize() {
+        mapCanvas.widthProperty().bind(mapContainer.widthProperty());
+        mapCanvas.heightProperty().bind(mapContainer.heightProperty());
+
+        mapContainer.widthProperty().addListener((obs, oldVal, newVal) -> {
+            if (worldMap != null) drawMap(worldMap);
+        });
+        mapContainer.heightProperty().addListener((obs, oldVal, newVal) -> {
+            if (worldMap != null) drawMap(worldMap);
+        });
+    }
 
     private void drawMap(WorldMap worldMap) {
-        mapGrid.getChildren().clear();
+        if (mapCanvas == null || mapCanvas.getGraphicsContext2D() == null) return;
 
-        int width = worldMap.getCurrentBounds().upperRight().getX();
-        int height = worldMap.getCurrentBounds().upperRight().getY();
+        double w = mapCanvas.getWidth();
+        double h = mapCanvas.getHeight();
 
-        for (int y = 0; y <= height; y++) {
-            for (int x = 0; x <= width; x++) {
+        if (w <= 0 || h <= 0) return;
+
+        GraphicsContext gc = mapCanvas.getGraphicsContext2D();
+
+        gc.clearRect(0, 0, w, h);
+        gc.setFill(Color.LIGHTGRAY); // Tło
+        gc.fillRect(0, 0, w, h);
+
+        int mapWidth = config.width();
+        int mapHeight = config.height();
+
+        if (mapWidth == 0 || mapHeight == 0) return;
+
+        double cellWidth = w / mapWidth;
+        double cellHeight = h / mapHeight;
+
+        double cellSize = Math.min(cellWidth, cellHeight);
+
+        double xOffset = (w - (cellSize * mapWidth)) / 2;
+        double yOffset = (h - (cellSize * mapHeight)) / 2;
+
+        for (int y = 0; y < mapHeight; y++) {
+            for (int x = 0; x < mapWidth; x++) {
                 Vector2d pos = new Vector2d(x, y);
                 WorldElement object = worldMap.objectAt(pos);
 
+                double pixelX = xOffset + (x * cellSize);
+                double pixelY = yOffset + ((mapHeight - 1 - y) * cellSize);
+
                 if (object instanceof Animal) {
-                    Circle animalShape = new Circle(15, Color.ORANGE);
-                    mapGrid.add(animalShape, x, height - y);
+                    gc.setFill(Color.ORANGE);
+                    gc.fillOval(pixelX, pixelY, cellSize, cellSize);
                 } else if (object instanceof Plant) {
-                    Rectangle plantShape = new Rectangle(30, 30, Color.GREEN);
-                    mapGrid.add(plantShape, x, height - y);
-                } else {
-                    // Puste pole
+                    gc.setFill(Color.GREEN);
+                    gc.fillRect(pixelX, pixelY, cellSize, cellSize);
                 }
             }
         }

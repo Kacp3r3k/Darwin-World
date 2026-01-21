@@ -12,6 +12,8 @@ public class Simulation implements Runnable {
     private volatile boolean running = true;
     private final Random random = new Random();
     private int day = 0;
+    private volatile boolean paused = false;
+    private final Object pauseLock = new Object();
 
     public Simulation(WorldMap map, SimulationConfig config) {
         this.map = map;
@@ -37,6 +39,16 @@ public class Simulation implements Runnable {
     @Override
     public void run() {
         while (running) {
+            synchronized (pauseLock) {
+                while (paused) {
+                    try {
+                        pauseLock.wait();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
+                }
+            }
             day++;
             if (map instanceof AbstractWorldMap abstractMap) {
                 abstractMap.removeDeadAnimals(day);
@@ -67,8 +79,14 @@ public class Simulation implements Runnable {
         }
 
     }
-
-    public void stop() {
-        running = false;
+    public void pause() {
+        paused = true;
     }
+    public void resume() {
+        synchronized (pauseLock) {
+            paused = false;
+            pauseLock.notify();
+        }
+    }
+
 }

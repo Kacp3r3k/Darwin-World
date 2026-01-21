@@ -51,6 +51,9 @@
 
                 <Label text="Top 3 Genotypy:" GridPane.rowIndex="7" GridPane.columnIndex="0" GridPane.valignment="TOP"/>
                 <Label fx:id="popularGenotypeLabel" text="-" wrapText="true" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+
+                <Label text="Liczba pożarów:" GridPane.rowIndex="8" GridPane.columnIndex="0" />
+                <Label fx:id="fireCountLabel" text="-" GridPane.rowIndex="8" GridPane.columnIndex="1"/>
             </GridPane>
 
             <Label text="Sterowanie" style="-fx-font-weight: bold; -fx-padding: 10 0 0 0;"/>

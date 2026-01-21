@@ -46,6 +46,9 @@
 
         <Label text="Długość genomu:" GridPane.rowIndex="11" GridPane.columnIndex="0"/>
         <TextField fx:id="genomeLengthField" text="5" GridPane.rowIndex="11" GridPane.columnIndex="1"/>
+
+        <Label text="Wariant symulacji:" GridPane.rowIndex="12" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="variantBox" GridPane.rowIndex="12" GridPane.columnIndex="1" />
     </GridPane>
 
     <Button text="Uruchom Symulację" onAction="#onSimulationStart"

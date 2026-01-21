@@ -13,7 +13,13 @@ public record SimulationConfig(
         int minMutations,
         int maxMutations,
         int genomeLength,
-        int moveCost
+        int moveCost,
+        SimulationVariant variant,
+        double fireProbability,
+        int fireDuration,
+        int animalBurnDuration,
+        int animalBurnEnergyLoss
+
 
 ) {
     public static SimulationConfig createDefault() {
@@ -29,7 +35,16 @@ public record SimulationConfig(
                 0,
                 2,
                 5,
-                1
+                1,
+                SimulationVariant.STANDARD,
+                0.01,
+                3,
+                2,
+                2
         );
     }
+    public SimulationVariant getVariant() {
+        return variant;
+    }
+
 }

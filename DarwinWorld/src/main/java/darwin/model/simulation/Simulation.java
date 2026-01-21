@@ -2,8 +2,7 @@ package darwin.model.simulation;
 
 import darwin.model.Animal;
 import darwin.model.Vector2d;
-import darwin.model.maps.AbstractWorldMap;
-import darwin.model.maps.WorldMap;
+import darwin.model.maps.*;
 import java.util.Random;
 
 public class Simulation implements Runnable {
@@ -15,9 +14,12 @@ public class Simulation implements Runnable {
     private volatile boolean paused = false;
     private final Object pauseLock = new Object();
 
-    public Simulation(WorldMap map, SimulationConfig config) {
-        this.map = map;
+    public Simulation(SimulationConfig config) {
         this.config = config;
+        this.map = switch (config.variant()) {
+            case STANDARD -> new GlobeMap(config.width(), config.height());
+            case FIRE -> new FireWorldMap(config.width(), config.height(), config);
+        };
         populate();
     }
 
@@ -89,4 +91,7 @@ public class Simulation implements Runnable {
         }
     }
 
+    public WorldMap getMap() {
+        return map;
+    }
 }

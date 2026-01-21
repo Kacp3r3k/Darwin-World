@@ -35,6 +35,7 @@ public class SimulationPresenter implements MapChangeListener {
     @FXML private Label avgLifeLabel;
     @FXML private Label avgChildrenLabel;
     @FXML private Label popularGenotypeLabel;
+    @FXML private Label fireCountLabel;
 
     @FXML private StackPane mapContainer;
     @FXML private Canvas mapCanvas;
@@ -60,10 +61,8 @@ public class SimulationPresenter implements MapChangeListener {
             this.config = SimulationConfig.createDefault();
         }
 
-        this.worldMap = new GlobeMap(this.config.width(), this.config.height());
-        worldMap.registerMapChangeListener(this);
-
-        this.simulation = new Simulation(worldMap, this.config);
+        this.simulation = new Simulation(this.config);
+        this.simulation.getMap().registerMapChangeListener(this);
 
         Thread thread = new Thread(simulation);
         thread.setDaemon(true);
@@ -106,6 +105,9 @@ public class SimulationPresenter implements MapChangeListener {
                 sb.append(g.toString()).append("\n");
             }
             popularGenotypeLabel.setText(sb.toString().trim());
+        }
+        if (fireCountLabel != null) {
+            fireCountLabel.setText(String.valueOf(stats.fireCount()));
         }
     }
     @FXML
@@ -157,10 +159,14 @@ public class SimulationPresenter implements MapChangeListener {
                 double pixelY = yOffset + ((mapHeight - 1 - y) * cellSize);
 
                 if (object instanceof Animal) {
-                    gc.setFill(Color.ORANGE);
+                    gc.setFill(Color.BROWN);
                     gc.fillOval(pixelX, pixelY, cellSize, cellSize);
                 } else if (object instanceof Plant) {
                     gc.setFill(Color.GREEN);
+                    gc.fillRect(pixelX, pixelY, cellSize, cellSize);
+                }
+                else if (object instanceof FireTile) {
+                    gc.setFill(Color.RED);
                     gc.fillRect(pixelX, pixelY, cellSize, cellSize);
                 }
             }

@@ -12,6 +12,7 @@ public record SimulationStats(
         double averageEnergy,
         double averageLifeSpan,
         double averageChildren,
-        List<Genotype> topGenotypes
+        List<Genotype> topGenotypes,
+        int fireCount
 ) {
 }

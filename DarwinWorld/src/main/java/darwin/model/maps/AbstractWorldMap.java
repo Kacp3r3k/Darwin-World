@@ -185,7 +185,8 @@ public abstract class AbstractWorldMap implements WorldMap {
                 avgEnergy,
                 avgLife,
                 avgChildren,
-                top3
+                top3,
+                0
         );
     }
 

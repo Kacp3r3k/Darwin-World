@@ -1,9 +1,11 @@
 package darwin.presenter;
 
 import darwin.model.simulation.SimulationConfig;
+import darwin.model.simulation.SimulationVariant;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -12,6 +14,7 @@ import java.io.IOException;
 
 public class ParametersPresenter {
 
+    @FXML private ComboBox<SimulationVariant> variantBox;
     @FXML private TextField widthField;
     @FXML private TextField heightField;
     @FXML private TextField startAnimalsField;
@@ -29,6 +32,9 @@ public class ParametersPresenter {
     public void initialize() {
         setupLimit(widthField, 500);
         setupLimit(heightField, 500);
+        variantBox.getItems().addAll(SimulationVariant.values());
+        variantBox.setValue(SimulationVariant.STANDARD);
+
     }
 
     private void setupLimit(TextField field, int max) {
@@ -74,7 +80,12 @@ public class ParametersPresenter {
                 minMutation,
                 maxMutation,
                 genomeLength,
-                moveCost
+                moveCost,
+                variantBox.getValue(),
+                0.01,
+                3,
+                2,
+                1
         );
 
         startSimulationWindow(config);

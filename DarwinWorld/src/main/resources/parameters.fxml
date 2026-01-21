@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="darwin.presenter.ParametersPresenter"
+      spacing="15" alignment="CENTER"
+      style="-fx-padding: 30; -fx-background-color: #f4f4f4;">
+
+    <Label text="Darwin World - Konfiguracja" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+    <GridPane hgap="10" vgap="10">
+        <Label text="Szerokość:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="widthField" text="20" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Wysokość:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="heightField" text="20" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="Startowe zwierzęta:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <TextField fx:id="startAnimalsField" text="10" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+        <Label text="Energia startowa:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <TextField fx:id="startEnergyField" text="20" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+        <Label text="Koszt ruchu:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <TextField fx:id="moveCostField" text="1" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+        <Label text="Energia z rośliny:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+        <TextField fx:id="plantEnergyField" text="10" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
+        <Label text="Rośliny na dzień:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+        <TextField fx:id="plantsPerDayField" text="5" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+
+        <Label text="Energia do rozmnażania:" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+        <TextField fx:id="reproduceEnergyField" text="10" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+
+        <Label text="Koszt potomka:" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
+        <TextField fx:id="reproductionCostField" text="5" GridPane.rowIndex="8" GridPane.columnIndex="1"/>
+
+        <Label text="Min mutacji:" GridPane.rowIndex="9" GridPane.columnIndex="0"/>
+        <TextField fx:id="minMutationField" text="0" GridPane.rowIndex="9" GridPane.columnIndex="1"/>
+
+        <Label text="Max mutacji:" GridPane.rowIndex="10" GridPane.columnIndex="0"/>
+        <TextField fx:id="maxMutationField" text="3" GridPane.rowIndex="10" GridPane.columnIndex="1"/>
+
+        <Label text="Długość genomu:" GridPane.rowIndex="11" GridPane.columnIndex="0"/>
+        <TextField fx:id="genomeLengthField" text="5" GridPane.rowIndex="11" GridPane.columnIndex="1"/>
+    </GridPane>
+
+    <Button text="Uruchom Symulację" onAction="#onSimulationStart"
+            style="-fx-font-size: 14px; -fx-padding: 10 20; -fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+</VBox>

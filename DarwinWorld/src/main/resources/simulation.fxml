@@ -5,6 +5,8 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.canvas.Canvas?>
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
@@ -12,7 +14,12 @@
             fx:controller="darwin.presenter.SimulationPresenter">
 
     <center>
-        <GridPane fx:id="mapGrid" gridLinesVisible="true" alignment="CENTER"/>
+        <StackPane fx:id="mapContainer" minWidth="400" minHeight="400"
+                   style="-fx-background-color: #dddddd; -fx-padding: 20;">
+
+            <Canvas fx:id="mapCanvas" width="400" height="400" />
+
+        </StackPane>
     </center>
 
     <left>
@@ -29,17 +36,21 @@
                 <Label text="Rośliny:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
                 <Label fx:id="plantCountLabel" text="0" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-                <Label text="Śr. Energia:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                <Label fx:id="avgEnergyLabel" text="0" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                <Label text="Wolne pola:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <Label fx:id="freeFieldsLabel" text="-" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
-                <Label text="Śr. długość życia:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-                <Label fx:id="avgLifeLabel" text="-" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                <Label text="Śr. Energia:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                <Label fx:id="avgEnergyLabel" text="0" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
 
-                <Label text="Śr. liczba dzieci:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-                <Label fx:id="avgChildrenLabel" text="-" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
 
-                <Label text="Top 3 Genotypy:" GridPane.rowIndex="6" GridPane.columnIndex="0" GridPane.valignment="TOP"/>
-                <Label fx:id="popularGenotypeLabel" text="-" wrapText="true" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+                <Label text="Śr. długość życia:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                <Label fx:id="avgLifeLabel" text="-" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
+                <Label text="Śr. liczba dzieci:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+                <Label fx:id="avgChildrenLabel" text="-" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+
+                <Label text="Top 3 Genotypy:" GridPane.rowIndex="7" GridPane.columnIndex="0" GridPane.valignment="TOP"/>
+                <Label fx:id="popularGenotypeLabel" text="-" wrapText="true" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
             </GridPane>
 
             <Label text="Sterowanie" style="-fx-font-weight: bold; -fx-padding: 10 0 0 0;"/>

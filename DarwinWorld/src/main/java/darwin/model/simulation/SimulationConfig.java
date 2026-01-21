@@ -12,7 +12,9 @@ public record SimulationConfig(
         int reproductionCost,
         int minMutations,
         int maxMutations,
-        int genomeLength
+        int genomeLength,
+        int moveCost
+
 ) {
     public static SimulationConfig createDefault() {
         return new SimulationConfig(
@@ -26,7 +28,8 @@ public record SimulationConfig(
                 2,
                 0,
                 2,
-                5
+                5,
+                1
         );
     }
 }

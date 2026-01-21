@@ -11,10 +11,13 @@ public class DarwinWorld extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getClassLoader().getResource("simulation.fxml"));
-        BorderPane viewRoot = loader.load();
+        loader.setLocation(getClass().getClassLoader().getResource("parameters.fxml"));
 
-        configureStage(primaryStage, viewRoot);
+        javafx.scene.layout.VBox viewRoot = loader.load();
+
+        var scene = new Scene(viewRoot);
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("Darwin World Launcher");
         primaryStage.show();
     }
 

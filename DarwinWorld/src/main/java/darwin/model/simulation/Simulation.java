@@ -94,4 +94,8 @@ public class Simulation implements Runnable {
     public WorldMap getMap() {
         return map;
     }
+
+    public boolean isPaused() {
+        return paused;
+    }
 }

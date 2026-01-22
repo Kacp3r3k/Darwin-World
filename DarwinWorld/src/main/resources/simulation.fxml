@@ -62,4 +62,19 @@
         </VBox>
     </left>
 
+    <right>
+        <VBox fx:id="animalDetailsBox" spacing="5" style="-fx-padding: 20">
+            <Label text="Śledzony zwierzak"/>
+            <Label fx:id="animalGenomeLabel"/>
+            <Label fx:id="animalActiveGeneLabel"/>
+            <Label fx:id="animalEnergyLabel"/>
+            <Label fx:id="animalPlantsEatenLabel"/>
+            <Label fx:id="animalChildrenLabel"/>
+            <Label fx:id="animalDescendantsLabel"/>
+            <Label fx:id="animalAgeLabel"/>
+            <Label fx:id="animalDeathLabel"/>
+        </VBox>
+
+    </right>
+
 </BorderPane>

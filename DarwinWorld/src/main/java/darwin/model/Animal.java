@@ -8,6 +8,8 @@ public class Animal implements WorldElement {
     private int age = 0;
     private int childrenCount = 0;
     private boolean isDead = false;
+    private int plantsEaten = 0;
+    private int deathDay = -1;
 
     public Animal(Vector2d position, int initialEnergy, int genomeSize) {
         this.position = position;
@@ -41,16 +43,24 @@ public class Animal implements WorldElement {
     }
 
 
-    public void addEnergy(int amount) { this.energy += amount; }
+    public void addEnergy(int amount) {
+        this.energy += amount;
+        this.plantsEaten++;
+    }
     public void subtractEnergy(int amount) { this.energy -= amount; }
     public void addChild() { this.childrenCount++; }
-    public void markAsDead(int day) { this.isDead = true; }
+    public void markAsDead(int day) {
+        this.isDead = true;
+        this.deathDay = day;
+    }
 
     public boolean isDead() { return isDead; }
     public int getEnergy() { return energy; }
     public int getAge() { return age; }
     public int getChildrenCount() { return childrenCount; }
     public Genotype getGenotype() { return genotype; }
+    public int getPlantsEaten() { return plantsEaten; }
+    public int getDeathDay() { return deathDay; }
 
     public void setPosition(Vector2d position) { this.position = position; }
 
